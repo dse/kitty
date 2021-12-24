@@ -21,11 +21,13 @@ our $numberByFile = 0;
 our $numberNonBlank = 0;
 our $showEnds = 0;
 our $showTabs = 0;
+our $indent = 0;
 
 #------------------------------------------------------------------------------
 use Getopt::Long;
 Getopt::Long::Configure('bundling', 'gnu_compat', 'no_ignore_case');
 Getopt::Long::GetOptions(
+    'i|indent'          => sub { $indent = 4; },
     'n|number'          => sub { $number = 1; },
     'N|number-by-file'  => sub { $number = 1; $numberByFile = 1; },
     'b|number-nonblank' => sub { $number = 1; $numberNonBlank = 1; },
@@ -39,6 +41,7 @@ sub usage { print(<<"END"); }
 usage:
     $PROGNAME [<option> ...] [<filename> ...]
 options:
+    -i, --indent
     -n, --number
     -N, --number-by-file    reset line number counter at each file
     -b, --number-nonblank
@@ -89,12 +92,15 @@ sub kittyFile {
             $_ .= '$';
         }
         $_ .= "\n";
+        if ($indent) {
+            print(" " x $indent);
+        }
         if ($number) {
             if ($noNumberFlag) {
                 print("\n");
             } else {
                 $lineNumber += 1;
-                printf("%6d\t", $lineNumber);
+                printf("%6d  ", $lineNumber);
             }
         }
         print($_);
